@@ -4,7 +4,29 @@ FROM alpine:latest
 #Instal les packets nécéssaire basique
 RUN apk update && \
     apk upgrade && \
-    apk add  php84 php84-fpm nginx
+    apk add  php84 php84-fpm nginx composer 
+
+RUN apk add \
+    php84-session \
+    php84-tokenizer \
+    php84-ctype \
+    php84-iconv \
+    php84-json \
+    php84-mbstring \
+    php84-openssl \
+    php84-xml \
+    php84-xmlwriter \
+    php84-simplexml \
+    php84-pdo \
+    php84-pdo_mysql \
+    php84-opcache \
+    php84-intl \
+    php84-apcu \
+    php84-zip \
+    php84-curl \
+    php84-phar \
+    git \
+    unzip   
 
 RUN adduser -S -G www-data www-data
 

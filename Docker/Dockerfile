@@ -1,13 +1,16 @@
 #Alpine est l'image la plus légère de linux
 FROM alpine:latest
 
-#Instal les packets nécéssaire basique
+#Installation des packets nécessaires basiques
 RUN apk update && \
     apk upgrade && \
-    apk add  php84 php84-fpm nginx composer 
+    apk add \
+    php84 \
+    php84-fpm \
+    nginx \
+    composer
 
-RUN apk add \
-    php84-session \
+RUN apk add php84-session \
     php84-tokenizer \
     php84-ctype \
     php84-iconv \
@@ -25,35 +28,36 @@ RUN apk add \
     php84-zip \
     php84-curl \
     php84-phar \
+    php84-dom \
+    php84-xmlreader \
     git \
-    unzip   
+    unzip
 
+
+# Configuration de l'utilisateur
 RUN adduser -S -G www-data www-data
 
-# Création des répertoires nécessaires avec les logs
-RUN mkdir -p /run/nginx && \
-    mkdir -p /var/run/php && \
-    mkdir -p /var/www/public && \
-    mkdir -p /var/log/nginx && \
-    mkdir -p /var/log/php-fpm && \
-    touch /var/log/nginx/error.log && \
-    touch /var/log/nginx/access.log && \
-    chown -R www-data:www-data /var/www /var/www && \
-    chown -R www-data:www-data /var/www /run/nginx && \
-    chown -R www-data:www-data /var/www /var/run/php && \
-    chown -R www-data:www-data /var/www /var/log/nginx && \
-    chown -R www-data:www-data /var/www /var/log/php-fpm
+# Création des répertoires et configuration des permissions
+RUN mkdir -p /run/nginx /var/run/php /var/www/public /var/log/nginx /var/log/php-fpm && \
+    touch /var/log/nginx/error.log /var/log/nginx/access.log && \
+    chown -R www-data:www-data /var/www && \
+    chown -R www-data:www-data /run/nginx && \
+    chown -R www-data:www-data /var/run/php && \
+    chown -R www-data:www-data /var/log/nginx && \
+    chown -R www-data:www-data /var/log/php-fpm
 
-#Copie du fichier nginx dans le container
+# Configuration des fichiers
 COPY nginx.conf /etc/nginx/nginx.conf
-
-#Copie du ficher php-fpm conf dans le container
 COPY www.conf /etc/php84/php-fpm.d/www.conf
 
-#Copie du fichier pour démarer le serveur
-COPY start.sh /start.sh
+COPY ./sfapi /var/www
 
-#Ajout des droit pour le fichier
+WORKDIR /var/www
+
+RUN composer install --ignore-platform-req=ext-* --no-scripts
+
+# Script de démarrage
+COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-CMD ["./start.sh"]
+CMD ["/start.sh"]

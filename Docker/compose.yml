@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./sfapi:/var/www
+    depends_on:
+      - database
+    environment:
+      - DATABASE_URL=mysql://user:password@database:3306/dbname
+
+  database:
+    image: mysql:8.0
+    platform: linux/amd64
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: arm64v8/phpmyadmin
+    platform: linux/arm64
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - database
+
+volumes:
+  db_data:

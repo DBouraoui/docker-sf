@@ -1,18 +1,23 @@
-.PHONY : build, send, go, clean
+.PHONY: build install start down
 
-build : 
-	docker buildx build -t alpine .
+# instal for the first time only symfony
+install:
+	mkdir -p sfapi && \
+	cd sfapi && \
+	composer create-project symfony/skeleton:"7.2.x" . && \
+	composer require symfony/maker-bundle --dev && \
+	composer require symfony/mailer && \
+	composer require symfony/orm-pack && \
+	composer require symfony/http-client && \
+	composer require symfony/security-bundle
 
-send :
-	docker run -p 80:80 -v ./sfapi:/var/www alpine
+# instal symfony and build docker
+build: install start
 
-go:
-	composer create-project symfony/skeleton:"7.2.x" sfapi && \
-	make build && \
-	make send
+#Build docker 
+start:
+	docker compose up --build -d
 
-# Nettoie les conteneurs et images
-clean:
-	docker stop $(CONTAINER_NAME) || true
-	docker rm $(CONTAINER_NAME) || true
-	docker rmi $(IMAGE_NAME) || true
+# Shut down docker
+down:
+	docker compose down

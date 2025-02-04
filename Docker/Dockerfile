@@ -30,6 +30,8 @@ RUN apk add php84-session \
     php84-phar \
     php84-dom \
     php84-xmlreader \
+    php84-mysqli \
+    php84-gd \
     git \
     unzip
 
@@ -49,8 +51,10 @@ RUN mkdir -p /run/nginx /var/run/php /var/www/public /var/log/nginx /var/log/php
 # Configuration des fichiers
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY www.conf /etc/php84/php-fpm.d/www.conf
+COPY php.ini /etc/php84/php.ini
 
 COPY ./sfapi /var/www
+
 
 WORKDIR /var/www
 

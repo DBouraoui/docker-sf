@@ -55,7 +55,6 @@ COPY php.ini /etc/php84/php.ini
 
 COPY ./sfapi /var/www
 
-
 WORKDIR /var/www
 
 RUN composer install --ignore-platform-req=ext-* --no-scripts

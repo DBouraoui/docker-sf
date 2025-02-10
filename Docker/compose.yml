@@ -1,5 +1,7 @@
+name: epitech-docker
 services:
   backend:
+    container_name: backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,6 +15,7 @@ services:
       - DATABASE_URL=mysql://user:password@database:3306/dbname
 
   database:
+    container_name: base-de-donne
     image: mysql:8.0
     platform: linux/amd64
     ports:
@@ -37,5 +40,21 @@ services:
     depends_on:
       - database
 
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=root
+      - GF_SECURITY_ADMIN_PASSWORD=root
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
 volumes:
   db_data:
+  grafana-storage: {}

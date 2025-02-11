@@ -1,6 +1,5 @@
-.PHONY: build install start down
-
-# instal for the first time only symfony and all packages
+.PHONY: build install start down install-no-symfony build-only 
+# instal for the first time only symfony
 install:
 	mkdir -p sfapi && \
 	cd sfapi && \
@@ -11,12 +10,26 @@ install:
 	composer require symfony/http-client && \
 	composer require symfony/security-bundle && \
 	composer require symfony/orm-pack && \
-	composer require --dev symfony/maker-bundle && \
-	composer require lexik/jwt-authentication-bundle && \
-	php bin/console lexik:jwt:generate-keypair
+    composer require --dev symfony/maker-bundle && \
+    composer require symfony/validator
+
+#install tout les package symfony sans recréer un symfony
+install-no-symfony : 
+	cd sfapi && \
+	composer install --ignore-platform-req=ext-* --no-scripts && \
+	composer require symfony/maker-bundle --dev && \
+	composer require symfony/mailer && \
+	composer require symfony/orm-pack && \
+	composer require symfony/http-client && \
+	composer require symfony/security-bundle && \
+	composer require symfony/orm-pack && \
+    composer require --dev symfony/maker-bundle && \
+    composer require symfony/validator
 
 # instal symfony and build docker
 build: install start
+
+build-only : install-no-symfony start
 
 #Build docker 
 start:

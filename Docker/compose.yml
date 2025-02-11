@@ -1,7 +1,6 @@
 name: epitech-docker
 services:
   backend:
-    container_name: backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,7 +14,6 @@ services:
       - DATABASE_URL=mysql://user:password@database:3306/dbname
 
   database:
-    container_name: base-de-donne
     image: mysql:8.0
     platform: linux/amd64
     ports:
